@@ -23,5 +23,12 @@
   "bugs": {
     "url": "https://github.com/yuvalw/njsTrace/issues"
   },
-  "homepage": "https://github.com/yuvalw/njsTrace"
+  "homepage": "https://github.com/yuvalw/njsTrace",
+  "dependencies": {
+    "esprima": "^1.0.4",
+    "extend": "^1.2.1"
+  },
+  "devDependencies": {
+    "jsdoc": "*"
+  }
 }

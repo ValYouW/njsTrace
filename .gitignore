@@ -2,4 +2,4 @@ node_modules
 *.node
 *.sh
 .idea
-
+out
