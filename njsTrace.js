@@ -21,22 +21,22 @@ var DEFAULT_CONFIG = {
  */
 
 /**
- * A callback that handles a trace on functions entry
- * @callback NJSTrace~onTraceEntry
+ * The callback type that is raised on functions entry
+ * @callback NJSTrace~onFunctionEntry
  * @param {string} file - The traced file
  * @param {string} name - The traced function name
  * @param {Number} line - The traced function line number
  * @param {Object} args - The function arguments object
- * @returns {Object} An object that will be passed as argument to NJSTrace~onTraceExit
+ * @returns {Object} An object that will be passed as argument to NJSTrace~onFunctionExit
  */
 
 /**
- * A callback that handles a trace on functions exit
- * @callback NJSTrace~onTraceExit
+ * The callback type that is raised on functions exit
+ * @callback NJSTrace~onFunctionExit
  * @param {string} file - The traced file
  * @param {string} name - The traced function name
  * @param {Number} line - The traced function line number
- * @param {Object} entryData - An object that was returned from NJSTrace~onTraceEntry
+ * @param {Object} entryData - An object that was returned from NJSTrace~onFunctionEntry
  */
 
 /**
@@ -45,16 +45,18 @@ var DEFAULT_CONFIG = {
  * @property {boolean|string|function} [logger=false] - If Boolean, indicates whether NJSTrace will log (to the console) its progress.
  *                                                      If string, a path to an output file (absolute or relative to current working dir).
  *                                                      If function, this function will be used as logger
+ *
  * @property {boolean|string} [trace=false] - If Boolean, indicates whether NJSTrace will output (to the console) trace info.
  *                                            If string, a path to a trace output file (absolute or relative to current working dir).
  * @property {boolean|string} [prof=true]   - If Boolean, indicates whether NJSTrace will output (to the console) profiler info.
  *                                            If string, a path to a profiler output file (absolute or relative to current working dir).
- * @property {NJSTrace~onTraceEntry} [traceEntryHandler=null] - A custom trace handler that will be called on functions entry.
- *                                                              If provided then the trace and prof settings above are ignored.
- *                                                              If provided traceExitHandler must be provided as well.
- * @property {NJSTrace~onTraceExit}  [traceExitHandler=null]  - A custom trace handler that will be called on functions exit.
- *                                                              If provided then the trace and prof settings above are ignored.
- *                                                              If provided traceEntryHandler must be provided as well.
+ *
+ * @property {NJSTrace~onFunctionEntry} [functionEntryHandler=null] - A custom trace handler that will be called on functions entry.
+ *                                                                    If provided, then the trace and prof settings above are ignored.
+       *                                                              If provided, functionExitHandler must be provided as well.
+ * @property {NJSTrace~onFunctionExit}  [functionExitHandler=null]  - A custom trace handler that will be called on functions exit.
+ *                                                                    If provided, then the trace and prof settings above are ignored.
+ *                                                                    If provided, functionEntryHandler must be provided as well.
  */
 
  /**
@@ -71,6 +73,9 @@ function NJSTrace(config) {
 	this.config = {};
 	extend(true, this.config, DEFAULT_CONFIG, config);
 
+	// Set the logger
+	this.logger = new Output(this.config.logger);
+
 	this.log('New instance of NJSTrace created with config:', this.config);
 
 	// Stop here if not enabled.
@@ -84,9 +89,6 @@ function NJSTrace(config) {
 		(this.config.onTraceEntry === null && this.config.onTraceExit !== null)) {
 		throw new Error('onTraceEntry and onTraceExit must be both provided or both be null');
 	}
-
-	// Set the logger
-	this.logger = new Output(this.config.logger);
 
 	// Set the trace/prof outputs, this is relevant only in case no custom trace handler provided
 	this.traceOutput = this.config.onTraceEntry === null ? new Output(this.config.trace) : null;
