@@ -92,6 +92,8 @@ function NJSTrace(config) {
 	this.traceOutput = this.config.onTraceEntry === null ? new Output(this.config.trace) : null;
 	this.profOutput = this.config.onTraceEntry === null ? new Output(this.config.prof) : null;
 
+	this.callStack = [];
+
 	this.hijackCompile();
 	this.setGlobalFunction();
 }
@@ -151,6 +153,7 @@ NJSTrace.prototype.traceExit = function(fnData) {
  * Hijack Node.js Module._compile method and inject the tracing stuff...
  */
 NJSTrace.prototype.hijackCompile = function() {
+	this.log('Creating new Injector and hijacking Module.prototype._compile');
 	var self = this;
 	var injector = new Injector(this);
 
@@ -169,6 +172,7 @@ NJSTrace.prototype.hijackCompile = function() {
  * Sets njsTrace tracing functions on the global context
  */
 NJSTrace.prototype.setGlobalFunction = function() {
+	this.log('Setting global trace handler functions');
 	var self = this;
 	global.__njsTraceStart__ = function(funcData) {
 		//self.output('In %s %s::%s', funcData.name, funcData.file, funcData.line);
