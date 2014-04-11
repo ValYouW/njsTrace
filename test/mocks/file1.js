@@ -2,7 +2,9 @@ function whatTime(cb) {
 	if (Date.now() < Number.MAX_VALUE) {
 		cb(Date.now());
 		return 'asdasdasdas';
-	}
+	} else {
+        throw new Error('bla bla');
+    }
 
 	cb('Welcome to the FUTURE !!');
 }
