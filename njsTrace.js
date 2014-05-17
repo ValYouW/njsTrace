@@ -219,7 +219,9 @@ module.exports.inject = function(config) {
 /**
  * @typedef {object} NJSTrace~functionExitArgs
  * @property {Object} entryData - An object that was returned from NJSTrace~onFunctionEntry
- * @property {boolean} exception - Whether the exit occurred due to exception
+ * @property {boolean} exception - Whether the exit occurred due to exception (throw Statement)
+ * @property {number} line - The line number where the exit is
+ * @property {*|undefined} returnValue - The function return value
  */
 
 /**
