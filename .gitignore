@@ -2,4 +2,5 @@ node_modules
 *.node
 *.sh
 .idea
+.codio
 out
