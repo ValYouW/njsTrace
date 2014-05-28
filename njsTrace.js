@@ -141,7 +141,7 @@ NJSTrace.prototype.hijackCompile = function() {
 	var origCompile = Module.prototype._compile;
 	Module.prototype._compile = function(content, filename) {
 		self.log('Instrumenting:', filename);
-		content = injector.injectTracing(filename, content);
+		content = injector.injectTracing(filename, content, true);
 		self.log('Done:', filename);
 
 		// And continue with the original compile...
@@ -219,7 +219,8 @@ module.exports.inject = function(config) {
 /**
  * @typedef {object} NJSTrace~functionExitArgs
  * @property {Object} entryData - An object that was returned from NJSTrace~onFunctionEntry
- * @property {boolean} exception - Whether the exit occurred due to exception (throw Statement)
+ * @property {String} exception - Whether the exit occurred due to exception (throw Statement).
+ *                                if "TRUE" then it was an unhandled exception
  * @property {number} line - The line number where the exit is
  * @property {*|undefined} returnValue - The function return value
  */
@@ -232,11 +233,11 @@ module.exports.inject = function(config) {
  *                                                            If string, a path to an output file (absolute or relative to current working dir).
  *                                                            If function, this function will be used as logger
  *
- * @property {boolean|string|function} [trace=false] - If Boolean, indicates whether NJSTrace will output (to the console) trace info.
+ * @property {boolean|string|function} [trace=true] - If Boolean, indicates whether NJSTrace will output (to the console) trace info.
  *                                                     If string, a path to a trace output file (absolute or relative to current working dir).
  *                                                     If function then this function will be used for output.
  *
- * @property {boolean|string|function} [prof=true]   - If Boolean, indicates whether NJSTrace will output (to the console) profiler info.
+ * @property {boolean|string|function} [prof=false]   - If Boolean, indicates whether NJSTrace will output (to the console) profiler info.
  *                                                     If string, a path to a profiler output file (absolute or relative to current working dir).
  *                                                     If function then this function will be used for output.
  *

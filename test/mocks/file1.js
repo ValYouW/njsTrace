@@ -2,7 +2,7 @@ function whatTime(cb) {
 	console.log('In whatTime');
 	if (Date.now() < 0) return;
 
-	if (Date.now() < Number.MAX_VALUE) {
+	if (Date.now() > Number.MAX_VALUE) {
 		cb(Date.now());
 		return ('asdasdasdas' || console.log('blabla')) && false;
 	} else {
@@ -14,14 +14,18 @@ function whatTime(cb) {
 
 var Mod = module.exports = {};
 Mod.foo = function() {
-	whatTime(function(time) {
-		console.log('In Mod.foo anonymous function', time);
-	});
+	try {
+		whatTime(function (time) {
+			console.log('In Mod.foo anonymous function', time);
+		});
+	} catch (e) {}
 
-	whatTime(function onTime(time) {
-		console.log('In Mod.foo onTime function', time);
-		//if (time > 0) throw new Error('Time is positive !');
-	});
+	try {
+		whatTime(function onTime(time) {
+			console.log('In Mod.foo onTime function', time);
+			//if (time > 0) throw new Error('Time is positive !');
+		});
+	} catch (ex) {}
 };
 
 var foo = function(x) {
