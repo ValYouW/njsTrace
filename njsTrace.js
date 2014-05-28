@@ -8,6 +8,7 @@ var util = require('util'),
 
 var DEFAULT_CONFIG = {
 	enabled: true,
+	wrapFunctions: true,
 	logger: false,
 	trace: true,
 	prof: false,
@@ -50,6 +51,11 @@ function NJSTrace(config) {
     this.config.onTraceExit = this.config.onTraceExit || null;
     if (typeof this.config.onTraceEntry !== typeof this.config.onTraceExit) {
 		throw new Error('onTraceEntry and onTraceExit must be both provided or both be null');
+	}
+
+	// Warn about the use of wrapFunctions when profiling
+	if (this.config.prof && this.config.wrapFunctions) {
+		this.log('WARN: Profiler is enabled, it is recommended to set wrapFunctions=false in the configuration');
 	}
 
 	// Set the tracer, this is relevant only in case no custom trace handler provided
@@ -141,7 +147,7 @@ NJSTrace.prototype.hijackCompile = function() {
 	var origCompile = Module.prototype._compile;
 	Module.prototype._compile = function(content, filename) {
 		self.log('Instrumenting:', filename);
-		content = injector.injectTracing(filename, content, true);
+		content = injector.injectTracing(filename, content, self.config.wrapFunctions);
 		self.log('Done:', filename);
 
 		// And continue with the original compile...
@@ -228,7 +234,8 @@ module.exports.inject = function(config) {
 /**
  * @typedef {object} NJSTrace~NJSConfig
  * @property {boolean} [enabled=true] - Whether njsTrace should instrument the code.
-
+ * @property {boolean} [wrapFunctions=true] - Whether njsTrace should wrap the injected functions with try/catch
+ *                                            NOTE: wrapping functions with try/catch prevents from v8 to optimize the function, don't use when profiling
  * @property {boolean|string|NJSTrace~onLog} [logger=false] - If Boolean, indicates whether NJSTrace will log (to the console) its progress.
  *                                                            If string, a path to an output file (absolute or relative to current working dir).
  *                                                            If function, this function will be used as logger
