@@ -1,5 +1,5 @@
 var njsTrace = require('../njsTrace.js');
-njsTrace.inject({logger: false, enabled: true, wrapFunctions:false, prof:false, trace:true});
+njsTrace.inject({logger: false, enabled: true, wrapFunctions:false, prof:false, trace:true, tabChar:'\t'});
 
 //var file1 = require('./mocks/file1.js');
 var file2 = require('./mocks/file2.js');

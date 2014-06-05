@@ -12,8 +12,10 @@ var DEFAULT_CONFIG = {
 	logger: false,
 	trace: true,
 	prof: false,
+	tabChar: '  ',
 	onTraceEntry: null,
-	onTraceExit: null
+	onTraceExit: null,
+	onCatchClause: null
 };
 
  /**
@@ -59,7 +61,11 @@ function NJSTrace(config) {
 	}
 
 	// Set the tracer, this is relevant only in case no custom trace handler provided
-	this.tracer = this.config.onTraceEntry ? null : new Tracer(this.config.trace, this.config.prof);
+	this.tracer = this.config.onTraceEntry ? null : new Tracer(this.config.trace, this.config.prof, this.config.tabChar);
+	if (this.tracer && this.config.onCatchClause) {
+		this.log('WARN: onCatchClause was provided but will be ignored as no onTraceEntry/onTraceExit were provided');
+		this.config.onCatchClause = null;
+	}
 
 	this.hijackCompile();
 	this.setGlobalFunction();
@@ -141,7 +147,7 @@ NJSTrace.prototype.log = function() {
 NJSTrace.prototype.hijackCompile = function() {
 	this.log('Creating new Injector and hijacking Module.prototype._compile');
 	var self = this;
-	var injector = new Injector(this, {entryHandler: '__njsTraceEntry__', exitHandler: '__njsTraceExit__', entryDataVar: '__njsEntryData__'});
+	var injector = new Injector(this);
 
 	// Save a reference to the _compile function and hijack it.
 	var origCompile = Module.prototype._compile;
@@ -174,9 +180,18 @@ NJSTrace.prototype.setGlobalFunction = function() {
 	this.log('Setting global.__njsTraceExit__ function');
 	global.__njsTraceExit__ = function(args) {
 		if (self.config.onTraceExit) {
-			return self.config.onTraceExit(args);
+			self.config.onTraceExit(args);
 		} else {
-			return self.tracer.onExit(args);
+			self.tracer.onExit(args);
+		}
+	};
+
+	this.log('Setting global.__njsOnCatchClause__ function');
+	global.__njsOnCatchClause__ = function(args) {
+		if (self.config.onCatchClause) {
+			self.config.onCatchClause(args);
+		} else {
+			self.tracer.onCatchClause(args);
 		}
 	};
 };
@@ -215,6 +230,13 @@ module.exports.inject = function(config) {
  */
 
 /**
+ * The callback type that is raised when the code hits a "catch" clause (i.e in try-catch).
+ * Used internally for call stack management
+ * @callback NJSTrace~onCatchClause
+ * @property {NJSTrace~catchClauseArgs} args - Object with info about the traced function
+ */
+
+/**
  * @typedef {object} NJSTrace~functionEntryArgs
  * @property {string} name - The traced function name
  * @property {string} file - The traced file
@@ -232,6 +254,11 @@ module.exports.inject = function(config) {
  */
 
 /**
+ * @typedef {object} NJSTrace~catchClauseArgs
+ * @property {Object} entryData - An object that was returned from NJSTrace~onFunctionEntry
+ */
+
+/**
  * @typedef {object} NJSTrace~NJSConfig
  * @property {boolean} [enabled=true] - Whether njsTrace should instrument the code.
  * @property {boolean} [wrapFunctions=true] - Whether njsTrace should wrap the injected functions with try/catch
@@ -241,18 +268,23 @@ module.exports.inject = function(config) {
  *                                                            If function, this function will be used as logger
  *
  * @property {boolean|string|function} [trace=true] - If Boolean, indicates whether NJSTrace will output (to the console) trace info.
- *                                                     If string, a path to a trace output file (absolute or relative to current working dir).
- *                                                     If function then this function will be used for output.
+ *                                                    If string, a path to a trace output file (absolute or relative to current working dir).
+ *                                                    If function then this function will be used for output.
  *
  * @property {boolean|string|function} [prof=false]   - If Boolean, indicates whether NJSTrace will output (to the console) profiler info.
- *                                                     If string, a path to a profiler output file (absolute or relative to current working dir).
- *                                                     If function then this function will be used for output.
+ *                                                      If string, a path to a profiler output file (absolute or relative to current working dir).
+ *                                                      If function then this function will be used for output.
+ *
+ * @property {String} [tabChar=<2 space chars>] - The tab character used for spacing the trace output (e.g '\t', '   ', etc)
  *
  * @property {NJSTrace~onFunctionEntry} [onTraceEntry=null] - A custom trace handler that will be called on functions entry.
- *                                                                    If provided, then the trace and prof settings above are ignored.
- *                                                                    If provided, functionExitHandler must be provided as well.
+ *                                                            If provided, then the trace and prof settings above are ignored.
+ *                                                            If provided, functionExitHandler must be provided as well.
  *
  * @property {NJSTrace~onFunctionExit}  [onTraceExit=null]  - A custom trace handler that will be called on functions exit.
- *                                                                    If provided, then the trace and prof settings above are ignored.
- *                                                                    If provided, functionEntryHandler must be provided as well.
+ *                                                            If provided, then the trace and prof settings above are ignored.
+ *                                                            If provided, functionEntryHandler must be provided as well.
+ * @property {NJSTrace~onCatchClause}  [onCatchClause=null]  - A custom handler that will be called when the code hits a "catch" clause (i.e in try-catch).
+ *                                                             Used internally for call-stack management.
+ *                                                             This custom handler will be called only if onTraceEntry and onTraceExit were provided.
  */

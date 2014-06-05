@@ -6,7 +6,7 @@ function b() {
 	try {
 		c();
 	} catch (e) {
-		console.log('ERR:', e);
+		//console.log('ERR:', e);
 	}
 	ba();
 }
