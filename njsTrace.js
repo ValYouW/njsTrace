@@ -1,5 +1,7 @@
 var util = require('util'),
+	path = require('path'),
 	extend = require('extend'),
+	fnmatch = require('./lib/fnmatch'),
 	Module = require('module'),
 	EventEmitter = require('events').EventEmitter,
 	Injector = require('./lib/injector.js'),
@@ -8,6 +10,7 @@ var util = require('util'),
 
 var DEFAULT_CONFIG = {
 	enabled: true,
+	files: ['**/*.js', '!**/node_modules/**'],
 	wrapFunctions: true,
 	logger: false,
 	trace: true,
@@ -31,6 +34,7 @@ function NJSTrace(config) {
 	// Merge the config with the default config
 	this.config = {};
 	extend(true, this.config, DEFAULT_CONFIG, config);
+	this.config.files = config.files || this.config.files; // In arrays we want to replace, not extend
 
 	if (!this.config.enabled) {
 		return;
@@ -152,9 +156,15 @@ NJSTrace.prototype.hijackCompile = function() {
 	// Save a reference to the _compile function and hijack it.
 	var origCompile = Module.prototype._compile;
 	Module.prototype._compile = function(content, filename) {
-		self.log('Instrumenting:', filename);
-		content = injector.injectTracing(filename, content, self.config.wrapFunctions);
-		self.log('Done:', filename);
+		// Check if we should instrument this file
+		var relPath = path.relative(process.cwd(), filename);
+		var instrument = fnmatch(relPath, self.config.files);
+
+		if (instrument) {
+			self.log('Instrumenting:', filename);
+			content = injector.injectTracing(filename, content, self.config.wrapFunctions);
+			self.log('Done:', filename);
+		}
 
 		// And continue with the original compile...
 		origCompile.call(this, content, filename);
@@ -261,6 +271,14 @@ module.exports.inject = function(config) {
 /**
  * @typedef {object} NJSTrace~NJSConfig
  * @property {boolean} [enabled=true] - Whether njsTrace should instrument the code.
+ *
+ * @property {string|string[]} [files=<see description>] - A glob file pattern(s) that matches the files to instrument,
+ * this supports any pattern supported by "minimatch" npm module.
+ * The matching is case-insensitive. Patterns are processed in-order with an 'or' operator, unless it's a
+ * negative pattern (i.e starts with "!") which negates (if match) all matches up to it.
+ * All file paths are processed RELATIVE to the process working directory.
+ * DEFAULT = All .js files EXCLUDING everything under node_modules (['**\/*.js', '!**\/node_modules\/**'])
+ *
  * @property {boolean} [wrapFunctions=true] - Whether njsTrace should wrap the injected functions with try/catch
  *                                            NOTE: wrapping functions with try/catch prevents from v8 to optimize the function, don't use when profiling
  * @property {boolean|string|NJSTrace~onLog} [logger=false] - If Boolean, indicates whether NJSTrace will log (to the console) its progress.

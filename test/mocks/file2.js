@@ -1,13 +1,15 @@
+var colors = require('colors');
+
 function a() {
 	b();
 }
 
 function b() {
-	try {
+//	try {
 		c();
-	} catch (e) {
+//	} catch (e) {
 		//console.log('ERR:', e);
-	}
+//	}
 	ba();
 }
 
