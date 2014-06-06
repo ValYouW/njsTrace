@@ -162,8 +162,28 @@ NJSTrace.prototype.hijackCompile = function() {
 
 		if (instrument) {
 			self.log('Instrumenting:', filename);
-			content = injector.injectTracing(filename, content, self.config.wrapFunctions);
-			self.log('Done:', filename);
+
+			// The content of a node Module needs to get wrapped in a function, otherwise it might be invalid (esprima won't like it otherwise).
+			// We wrap it like node.js is wrapping (see Module.prototype._compile), since this logic might change we
+			// check that the wrapping is done using 2 parts, if not just skip the wrapping and hope esprima won't fail :)
+			if (Module.wrapper.length === 2) {
+				content = Module.wrapper[0] + content + Module.wrapper[1];
+			} else {
+				self.log('WARN !! It seems like the node.js version you are using has changed and might be incompatible with njsTrace');
+			}
+
+			try {
+				content = injector.injectTracing(filename, content, self.config.wrapFunctions);
+
+				// If we wrapped the content we need now to remove it as node.js original compile will do it...
+				if (Module.wrapper.length === 2) {
+					content = content.substring(Module.wrapper[0].length, content.length - Module.wrapper[1].length);
+				}
+
+				self.log('Done:', filename);
+			} catch (ex) {
+				self.log('ERROR: Error instrumenting file:', filename, ', Exception:', ex);
+			}
 		}
 
 		// And continue with the original compile...

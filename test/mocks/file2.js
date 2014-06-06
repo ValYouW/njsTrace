@@ -29,4 +29,4 @@ exports.foo = function() {
 	} catch (e) {
 		console.log('ERROR:', e);
 	}
-}
+};
