@@ -23,9 +23,9 @@ var DEFAULT_CONFIG = {
 
  /**
  * Creates a new instance of NJSTrace
+ * @param {NJSTrace.NJSConfig} [config] - A configuration object
  * @class The main class that is responsible for the entire njsTrace functionality
  * @extends EventEmitter
- * @param {NJSTrace~NJSConfig} [config] - A configuration object
  * @constructor
  */
 function NJSTrace(config) {
@@ -90,7 +90,7 @@ NJSTrace.events = {
 // Define some properties with get/set on the prototype
 Object.defineProperties(NJSTrace.prototype, {
 	/**
-	 * See "enabled" property on {@link NJSTrace~NJSConfig}
+	 * See "enabled" property on {@link NJSTrace.NJSConfig}
 	 * @memberOf! NJSTrace.prototype
 	 */
 	'enabled': {
@@ -98,40 +98,6 @@ Object.defineProperties(NJSTrace.prototype, {
 		set: function(value) {
 			this.config.prof = !!value;
 			this.log('NJSTrace enabled property changed to: ', this.config.enabled);
-		}
-	},
-	/**
-	 * See "prof" property on {@link NJSTrace~NJSConfig}
-	 * @memberOf! NJSTrace.prototype
-	 */
-	'prof': {
-		get: function() {return this.config.prof;},
-		set: function(value) {
-			this.config.prof = value;
-			this.log('NJSTrace prof property changed to: ', this.config.prof);
-			if (this.config.onTraceEntry) {
-				this.log('warn: prof property will be ignored as a custom onTraceEntry was provided');
-			}
-			if (this.tracer) {
-				this.tracer.prof = this.config.prof;
-			}
-		}
-	},
-	/**
-	 * See "trace" property on {@link NJSTrace~NJSConfig}
-	 * @memberOf NJSTrace.prototype
-	 */
-	'trace': {
-		get: function() {return this.config.trace;},
-		set: function(value) {
-			this.config.trace = value;
-			this.log('NJSTrace trace property changed to: ', this.config.trace);
-			if (this.config.onTraceEntry) {
-				this.log('warn: trace property will be ignored as a custom onTraceEntry was provided');
-			}
-			if (this.tracer) {
-				this.tracer.trace = this.config.trace;
-			}
 		}
 	}
 });
@@ -249,7 +215,7 @@ var instance = null;
 
 /**
  * Creates or gets a reference to an NJSTrace instance
- * @param {NJSTrace~NJSConfig} config
+ * @param {NJSTrace.NJSConfig} config
  * @returns {NJSTrace} An instance of NJSTrace
  */
 module.exports.inject = function(config) {
@@ -261,54 +227,14 @@ module.exports.inject = function(config) {
 
 /**
  * This callback is called when there is a message to log
- * @callback NJSTrace~onLog
+ * @callback NJSTrace.onLog
  * @property {string} message - The log message
  */
 
 /**
- * The callback type that is raised on traced functions entry
- * @callback NJSTrace~onFunctionEntry
- * @property {NJSTrace~functionEntryArgs} args - Object with info about the traced function
- * @returns {Object} An object that will be passed as argument to NJSTrace~onFunctionExit
- */
-
-/**
- * The callback type that is raised on traced functions exit
- * @callback NJSTrace~onFunctionExit
- * @property {NJSTrace~functionExitArgs} args - Object with info about the traced function
- */
-
-/**
- * The callback type that is raised when the code hits a "catch" clause (i.e in try-catch).
- * Used internally for call stack management
- * @callback NJSTrace~onCatchClause
- * @property {NJSTrace~catchClauseArgs} args - Object with info about the traced function
- */
-
-/**
- * @typedef {object} NJSTrace~functionEntryArgs
- * @property {string} name - The traced function name
- * @property {string} file - The traced file
- * @property {Number} line - The traced function line number
- * @property {Object} args - The function arguments object
- */
-
-/**
- * @typedef {object} NJSTrace~functionExitArgs
- * @property {Object} entryData - An object that was returned from NJSTrace~onFunctionEntry
- * @property {String} exception - Whether the exit occurred due to exception (throw Statement).
- *                                if "TRUE" then it was an unhandled exception
- * @property {number} line - The line number where the exit is
- * @property {*|undefined} returnValue - The function return value
- */
-
-/**
- * @typedef {object} NJSTrace~catchClauseArgs
- * @property {Object} entryData - An object that was returned from NJSTrace~onFunctionEntry
- */
-
-/**
- * @typedef {object} NJSTrace~NJSConfig
+ * The njsTrace config object
+ * @typedef {object} NJSTrace.NJSConfig
+ *
  * @property {boolean} [enabled=true] - Whether tracing is active. Note: njsTrace will instrument the code regardless of this setting.
  *
  * @property {string|string[]} [files=<see description>] - A glob file pattern(s) that matches the files to instrument,
@@ -319,29 +245,34 @@ module.exports.inject = function(config) {
  * DEFAULT = All .js files EXCLUDING everything under node_modules (['**\/*.js', '!**\/node_modules\/**'])
  *
  * @property {boolean} [wrapFunctions=true] - Whether njsTrace should wrap the injected functions with try/catch
- *                                            NOTE: wrapping functions with try/catch prevents from v8 to optimize the function, don't use when profiling
- * @property {boolean|string|NJSTrace~onLog} [logger=false] - If Boolean, indicates whether NJSTrace will log (to the console) its progress.
- *                                                            If string, a path to an output file (absolute or relative to current working dir).
- *                                                            If function, this function will be used as logger
+ * NOTE: wrapping functions with try/catch prevents from v8 to optimize the function, don't use when profiling
  *
- * @property {boolean|string|function} [trace=true] - If Boolean, indicates whether NJSTrace will output (to the console) trace info.
- *                                                    If string, a path to a trace output file (absolute or relative to current working dir).
- *                                                    If function then this function will be used for output.
+ * @property {boolean|string|NJSTrace.onLog} [logger=false] - Controls where the logger output should go
+ * If Boolean, indicates whether NJSTrace will log (to the console) its progress.
+ * If string, a path to an output file (absolute or relative to current working dir).
+ * If function, this function will be used as logger
  *
- * @property {boolean|string|function} [prof=false]   - If Boolean, indicates whether NJSTrace will output (to the console) profiler info.
- *                                                      If string, a path to a profiler output file (absolute or relative to current working dir).
- *                                                      If function then this function will be used for output.
- *
- * @property {String} [tabChar=<2 space chars>] - The tab character used for spacing the trace output (e.g '\t', '   ', etc)
- *
- * @property {NJSTrace~onFunctionEntry} [onTraceEntry=null] - A custom trace handler that will be called on functions entry.
- *                                                            If provided, then the trace and prof settings above are ignored.
- *                                                            If provided, functionExitHandler must be provided as well.
- *
- * @property {NJSTrace~onFunctionExit}  [onTraceExit=null]  - A custom trace handler that will be called on functions exit.
- *                                                            If provided, then the trace and prof settings above are ignored.
- *                                                            If provided, functionEntryHandler must be provided as well.
- * @property {NJSTrace~onCatchClause}  [onCatchClause=null]  - A custom handler that will be called when the code hits a "catch" clause (i.e in try-catch).
- *                                                             Used internally for call-stack management.
- *                                                             This custom handler will be called only if onTraceEntry and onTraceExit were provided.
  */
+
+/**
+ * @typedef {object} NJSTrace.functionEntryArgs
+ * @property {string} name - The traced function name
+ * @property {string} file - The traced file
+ * @property {Number} line - The traced function line number
+ * @property {Object} args - The function arguments object
+ */
+
+/**
+ * @typedef {object} NJSTrace.functionExitArgs
+ * @property {Object} entryData - An object that was returned from NJSTrace.onFunctionEntry
+ * @property {String} exception - Whether the exit occurred due to exception (throw Statement).
+ *                                if "TRUE" then it was an unhandled exception
+ * @property {number} line - The line number where the exit is
+ * @property {*|undefined} returnValue - The function return value
+ */
+
+/**
+ * @typedef {object} NJSTrace.catchClauseArgs
+ * @property {Object} entryData - An object that was returned from NJSTrace.onFunctionEntry
+ */
+
