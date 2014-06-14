@@ -1,7 +1,7 @@
 var util = require('util'),
 	path = require('path'),
 	extend = require('extend'),
-	fnmatch = require('./lib/fnmatch'),
+	fnmatch = require('./lib/fnmatch.js'),
 	Module = require('module'),
 	EventEmitter = require('events').EventEmitter,
 	Injector = require('./lib/injector.js'),
@@ -35,10 +35,6 @@ function NJSTrace(config) {
 	this.config = {};
 	extend(true, this.config, DEFAULT_CONFIG, config);
 	this.config.files = config.files || this.config.files; // In arrays we want to replace, not extend
-
-	if (!this.config.enabled) {
-		return;
-	}
 
 	// Set the logger
 	this.logger = new Output(this.config.logger);
@@ -93,6 +89,17 @@ NJSTrace.events = {
 
 // Define some properties with get/set on the prototype
 Object.defineProperties(NJSTrace.prototype, {
+	/**
+	 * See "enabled" property on {@link NJSTrace~NJSConfig}
+	 * @memberOf! NJSTrace.prototype
+	 */
+	'enabled': {
+		get: function() {return this.config.enabled;},
+		set: function(value) {
+			this.config.prof = !!value;
+			this.log('NJSTrace enabled property changed to: ', this.config.enabled);
+		}
+	},
 	/**
 	 * See "prof" property on {@link NJSTrace~NJSConfig}
 	 * @memberOf! NJSTrace.prototype
@@ -200,6 +207,10 @@ NJSTrace.prototype.setGlobalFunction = function() {
 
 	this.log('Setting global.__njsTraceEntry__ function');
 	global.__njsTraceEntry__ = function(args) {
+		if (!self.config.enabled) {
+			return;
+		}
+
 		if (self.config.onTraceEntry) {
 			return self.config.onTraceEntry(args);
 		} else {
@@ -209,6 +220,10 @@ NJSTrace.prototype.setGlobalFunction = function() {
 
 	this.log('Setting global.__njsTraceExit__ function');
 	global.__njsTraceExit__ = function(args) {
+		if (!self.config.enabled) {
+			return;
+		}
+
 		if (self.config.onTraceExit) {
 			self.config.onTraceExit(args);
 		} else {
@@ -218,6 +233,10 @@ NJSTrace.prototype.setGlobalFunction = function() {
 
 	this.log('Setting global.__njsOnCatchClause__ function');
 	global.__njsOnCatchClause__ = function(args) {
+		if (!self.config.enabled) {
+			return;
+		}
+
 		if (self.config.onCatchClause) {
 			self.config.onCatchClause(args);
 		} else {
@@ -290,7 +309,7 @@ module.exports.inject = function(config) {
 
 /**
  * @typedef {object} NJSTrace~NJSConfig
- * @property {boolean} [enabled=true] - Whether njsTrace should instrument the code.
+ * @property {boolean} [enabled=true] - Whether tracing is active. Note: njsTrace will instrument the code regardless of this setting.
  *
  * @property {string|string[]} [files=<see description>] - A glob file pattern(s) that matches the files to instrument,
  * this supports any pattern supported by "minimatch" npm module.
