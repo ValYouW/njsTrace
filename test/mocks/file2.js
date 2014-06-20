@@ -5,11 +5,11 @@ function a() {
 }
 
 function b() {
-//	try {
+	try {
 		c();
-//	} catch (e) {
-		//console.log('ERR:', e);
-//	}
+	} catch (e) {
+		console.log('ERR:', e);
+	}
 	ba();
 }
 

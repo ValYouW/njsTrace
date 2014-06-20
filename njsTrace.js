@@ -6,19 +6,15 @@ var util = require('util'),
 	EventEmitter = require('events').EventEmitter,
 	Injector = require('./lib/injector.js'),
 	Output = require('./lib/output.js'),
-	Tracer = require('./lib/tracer.js');
+	Tracer = require('./lib/tracer.js'),
+	Formatter = require('./lib/formatter.js');
 
 var DEFAULT_CONFIG = {
 	enabled: true,
 	files: ['**/*.js', '!**/node_modules/**'],
 	wrapFunctions: true,
 	logger: false,
-	trace: true,
-	prof: false,
-	tabChar: '  ',
-	onTraceEntry: null,
-	onTraceExit: null,
-	onCatchClause: null
+	formatter: undefined
 };
 
  /**
@@ -41,31 +37,19 @@ function NJSTrace(config) {
 
 	this.log('New instance of NJSTrace created with config:', this.config);
 
-	// Validate trace functions (if provided).
-    if (this.config.onTraceEntry && typeof this.config.onTraceEntry !== 'function') {
-        throw new Error('onTraceEntry in config object must be a function');
-    } else if (this.config.onTraceExit && typeof this.config.onTraceExit !== 'function') {
-        throw new Error('onTraceExit in config object must be a function');
-    }
-
-	// Make sure that both traceEntry/Exit are provided (or both not provided).
-    this.config.onTraceEntry = this.config.onTraceEntry || null;
-    this.config.onTraceExit = this.config.onTraceExit || null;
-    if (typeof this.config.onTraceEntry !== typeof this.config.onTraceExit) {
-		throw new Error('onTraceEntry and onTraceExit must be both provided or both be null');
+	// Warn about the use of wrapFunctions
+	if (this.config.wrapFunctions) {
+		this.log('WARN: wrapFunctions is set, it might affect V8 optimizations, set it to false if performing benchmarks');
 	}
 
-	// Warn about the use of wrapFunctions when profiling
-	if (this.config.prof && this.config.wrapFunctions) {
-		this.log('WARN: Profiler is enabled, it is recommended to set wrapFunctions=false in the configuration');
+	// Create a formatter
+	var formatters = this.getFormatters(this.config.formatter);
+	if (formatters.length < 1) {
+		throw new Error('Invalid formatter type in config, must be either an instance of Formatter, or file path (string), or array of each');
 	}
 
-	// Set the tracer, this is relevant only in case no custom trace handler provided
-	this.tracer = this.config.onTraceEntry ? null : new Tracer(this.config.trace, this.config.prof, this.config.tabChar);
-	if (this.tracer && this.config.onCatchClause) {
-		this.log('WARN: onCatchClause was provided but will be ignored as no onTraceEntry/onTraceExit were provided');
-		this.config.onCatchClause = null;
-	}
+	// Set the tracer
+	this.tracer =  new Tracer(formatters);
 
 	this.hijackCompile();
 	this.setGlobalFunction();
@@ -211,6 +195,32 @@ NJSTrace.prototype.setGlobalFunction = function() {
 	};
 };
 
+/**
+ * Build a formatter array from the given config
+ * @private
+ */
+NJSTrace.prototype.getFormatters = function(formatterConfig, result) {
+	var self = this;
+	result = util.isArray(result) ? result : []; // If we got array use it
+
+	// If not formatter specified, or this is a string (file path), create the default formatter
+	if (formatterConfig === null || typeof formatterConfig === 'undefined' || typeof formatterConfig === 'string') {
+		result.push(new Formatter({stdout: this.config.formatter}));
+
+	// If this is already a Formatter instance, use it
+	} else if (formatterConfig instanceof Formatter) {
+		result.push(formatterConfig);
+
+	// If this is an array, loop thru the array and add it to our result
+	} else if (util.isArray(formatterConfig)) {
+		formatterConfig.forEach(function (fmt) {
+			self.getFormatters(fmt, result);
+		});
+	}
+
+	return result;
+};
+
 var instance = null;
 
 /**
@@ -251,6 +261,9 @@ module.exports.inject = function(config) {
  * If Boolean, indicates whether NJSTrace will log (to the console) its progress.
  * If string, a path to an output file (absolute or relative to current working dir).
  * If function, this function will be used as logger
+ *
+ * @property {Formatter|string} [formatter=undefined] - An instance of formatter to use for output.
+ * if string, a path to an output file (a default formatter would be used with its default settings, (see {@link Formatter.Config})
  *
  */
 
