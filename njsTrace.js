@@ -88,7 +88,7 @@ Object.defineProperties(NJSTrace.prototype, {
 
 /**
  * Simple logger function
- * @param {...string|number|object} arguments
+ * @param {...(string|number|object)} arguments
  * @private
  */
 NJSTrace.prototype.log = function() {
