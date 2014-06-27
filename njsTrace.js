@@ -123,14 +123,18 @@ NJSTrace.prototype.hijackCompile = function() {
 			// The content of a node Module needs to get wrapped in a function, otherwise it might be invalid (esprima won't like it otherwise).
 			// We wrap it like node.js is wrapping (see Module.prototype._compile), since this logic might change we
 			// check that the wrapping is done using 2 parts, if not just skip the wrapping and hope esprima won't fail :)
+			var wrapped = true;
 			if (Module.wrapper.length === 2) {
-				content = Module.wrapper[0] + content + Module.wrapper[1];
+				// It is important to add the \n between wrapper[0] and content as we don't want any user functions to
+				// be in the first line of the file (we assume in the injector that the first line is the module wrapping function only)
+				content = Module.wrapper[0] + '\n' + content + Module.wrapper[1];
 			} else {
+				wrapped = false;
 				self.log('WARN !! It seems like the node.js version you are using has changed and might be incompatible with njsTrace');
 			}
 
 			try {
-				content = injector.injectTracing(filename, content, self.config.wrapFunctions);
+				content = injector.injectTracing(filename, content, self.config.wrapFunctions, wrapped);
 
 				// If we wrapped the content we need now to remove it as node.js original compile will do it...
 				if (Module.wrapper.length === 2) {
@@ -161,10 +165,10 @@ NJSTrace.prototype.setGlobalFunction = function() {
 			return;
 		}
 
-		if (self.config.onTraceEntry) {
-			return self.config.onTraceEntry(args);
-		} else {
+		try {
 			return self.tracer.onEntry(args);
+		} catch (ex) {
+			self.log('ERROR: Exception occurred on tracer entry:', ex);
 		}
 	};
 
@@ -174,10 +178,10 @@ NJSTrace.prototype.setGlobalFunction = function() {
 			return;
 		}
 
-		if (self.config.onTraceExit) {
-			self.config.onTraceExit(args);
-		} else {
+		try {
 			self.tracer.onExit(args);
+		} catch (ex) {
+			self.log('ERROR: Exception occurred on tracer exit:', ex);
 		}
 	};
 
@@ -187,10 +191,10 @@ NJSTrace.prototype.setGlobalFunction = function() {
 			return;
 		}
 
-		if (self.config.onCatchClause) {
-			self.config.onCatchClause(args);
-		} else {
+		try {
 			self.tracer.onCatchClause(args);
+		} catch (ex) {
+			self.log('ERROR: Exception occurred on tracer onCatchClause:', ex);
 		}
 	};
 };
@@ -203,13 +207,17 @@ NJSTrace.prototype.getFormatters = function(formatterConfig, result) {
 	var self = this;
 	result = util.isArray(result) ? result : []; // If we got array use it
 
-	// If not formatter specified, or this is a string (file path), create the default formatter
-	if (formatterConfig === null || typeof formatterConfig === 'undefined' || typeof formatterConfig === 'string') {
-		result.push(new Formatter({stdout: this.config.formatter}));
+	// If not formatter specified create the default formatter
+	if (formatterConfig === null || typeof formatterConfig === 'undefined') {
+		result.push(new Formatter());
 
 	// If this is already a Formatter instance, use it
 	} else if (formatterConfig instanceof Formatter) {
 		result.push(formatterConfig);
+
+	// If this is an object then treat it as if it was the config for the default formatter
+	} else if (typeof formatterConfig === 'object') {
+		result.push(new Formatter(formatterConfig));
 
 	// If this is an array, loop thru the array and add it to our result
 	} else if (util.isArray(formatterConfig)) {
@@ -262,9 +270,9 @@ module.exports.inject = function(config) {
  * If string, a path to an output file (absolute or relative to current working dir).
  * If function, this function will be used as logger
  *
- * @property {Formatter|string} [formatter=undefined] - An instance of formatter to use for output.
- * if string, a path to an output file (a default formatter would be used with its default settings, (see {@link Formatter.Config})
- *
+ * @property {Formatter|Formatter.Config|(Formatter|Formatter.Config)[]} [formatter=undefined] - An instance of formatter to use for output.
+ * if object, a configuration to the default Formatter (see {@link Formatter.Config}).
+ * if Array, a list of formatters to use, or a list of configurations for the default formatter (can be mixed).
  */
 
 /**
@@ -273,6 +281,7 @@ module.exports.inject = function(config) {
  * @property {string} file - The traced file
  * @property {Number} line - The traced function line number
  * @property {Object} args - The function arguments object
+ * @protected
  */
 
 /**
@@ -282,10 +291,12 @@ module.exports.inject = function(config) {
  *                                if "TRUE" then it was an unhandled exception
  * @property {number} line - The line number where the exit is
  * @property {*|undefined} returnValue - The function return value
+ * @protected
  */
 
 /**
  * @typedef {object} NJSTrace.catchClauseArgs
  * @property {Object} entryData - An object that was returned from NJSTrace.onFunctionEntry
+ * @protected
  */
 
