@@ -1,7 +1,8 @@
 // --- TODO: Write some real tests ---
 
 var njsTrace = require('../njsTrace.js');
-njsTrace.inject({logger: false,
+njsTrace.inject({inspectArgs: true,
+				 logger: false,
 				 enabled: true,
 				 wrapFunctions:true,
 				 files:['**/*.js', '!**/node_modules/**', 'node_modules/colors/**/*.js'],
