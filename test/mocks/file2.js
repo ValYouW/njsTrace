@@ -11,17 +11,19 @@ function b() {
 		console.log('ERR:', e);
 	}
 	ba();
+	return {func:'b'};
 }
 
 function c() {
 	d();
+	return 'c';
 }
 
 function d() {
 	throw new Error('Error from d');
 }
 
-function ba() {}
+function ba() {return 'ba';}
 
 exports.foo = function() {
 	try {

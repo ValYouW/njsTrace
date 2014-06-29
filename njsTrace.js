@@ -14,6 +14,7 @@ var DEFAULT_CONFIG = {
 	files: ['**/*.js', '!**/node_modules/**'],
 	wrapFunctions: true,
 	logger: false,
+	inspectArgs: true,
 	formatter: undefined
 };
 
@@ -134,7 +135,7 @@ NJSTrace.prototype.hijackCompile = function() {
 			}
 
 			try {
-				content = injector.injectTracing(filename, content, self.config.wrapFunctions, wrapped);
+				content = injector.injectTracing(filename, content, self.config.wrapFunctions, self.config.inspectArgs, wrapped);
 
 				// If we wrapped the content we need now to remove it as node.js original compile will do it...
 				if (Module.wrapper.length === 2) {
@@ -269,6 +270,8 @@ module.exports.inject = function(config) {
  * If Boolean, indicates whether NJSTrace will log (to the console) its progress.
  * If string, a path to an output file (absolute or relative to current working dir).
  * If function, this function will be used as logger
+ *
+ * @property {boolean} [inspectArgs=true] - Whether njsTrace should inspect the traced functions arguments and return values
  *
  * @property {Formatter|Formatter.Config|(Formatter|Formatter.Config)[]} [formatter=undefined] - An instance of formatter to use for output.
  * if object, a configuration to the default Formatter (see {@link Formatter.Config}).
