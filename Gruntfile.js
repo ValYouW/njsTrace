@@ -25,7 +25,7 @@ module.exports = function(grunt) {
 				'-W013': true,  // W013: Missing space after 'function'.
 				'-W015': false, // W015: Expected 'case' to have an indentation at 5 instead at 9.
 				'-W083': true,  // W083: Don't make functions within a loop.
-				'-W089': true,  // W089: The body of a for in should be wrapped in an if statement to filter unwanted properties from the prototype.
+				'-W089': true  // W089: The body of a for in should be wrapped in an if statement to filter unwanted properties from the prototype.
 			},
 			files: ['**/*.js', '!node_modules/**', '!doc/**', '!test/mocks/**']
         },
@@ -37,8 +37,8 @@ module.exports = function(grunt) {
 				options: {
 					destination: 'doc',
 					private: false,
-					template : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template",
-					configure : "jsdoc.conf.json"
+					template : 'node_modules/grunt-jsdoc/node_modules/ink-docstrap/template',
+					configure : 'jsdoc.conf.json'
 				}
 			}
 		}

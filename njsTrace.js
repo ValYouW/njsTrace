@@ -239,7 +239,7 @@ var instance = null;
  */
 module.exports.inject = function(config) {
 	if (!instance) {
-		instance = new NJSTrace(config);
+		instance = new NJSTrace(config || {});
 	}
 	return instance;
 };
