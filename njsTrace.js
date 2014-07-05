@@ -46,7 +46,7 @@ function NJSTrace(config) {
 	// Create a formatter
 	var formatters = this.getFormatters(this.config.formatter);
 	if (formatters.length < 1) {
-		throw new Error('Invalid formatter type in config, must be either an instance of Formatter, or file path (string), or array of each');
+		throw new Error('Invalid formatter type in config, must be either an instance of Formatter, or config object, or array of each');
 	}
 
 	// Set the tracer
