@@ -20,42 +20,12 @@ var DEFAULT_CONFIG = {
 
  /**
  * Creates a new instance of NJSTrace
- * @param {NJSTrace.NJSConfig} [config] - A configuration object
  * @class The main class that is responsible for the entire njsTrace functionality
  * @extends EventEmitter
  * @constructor
  */
-function NJSTrace(config) {
+function NJSTrace() {
 	EventEmitter.call(this);
-
-	// Merge the config with the default config
-	this.config = {};
-	extend(true, this.config, DEFAULT_CONFIG, config);
-	this.config.files = config.files || this.config.files; // In arrays we want to replace, not extend
-
-	// Set the logger
-	this.logger = new Output(this.config.logger);
-
-	this.log('New instance of NJSTrace created with config:', this.config);
-
-	// Warn about the use of wrapFunctions
-	if (this.config.wrapFunctions) {
-		this.log('WARN: wrapFunctions is set, it might affect V8 optimizations, set it to false if performing benchmarks');
-	}
-
-	// Create a formatter
-	var formatters = this.getFormatters(this.config.formatter);
-	if (formatters.length < 1) {
-		throw new Error('Invalid formatter type in config, must be either an instance of Formatter, or config object, or array of each');
-	}
-
-	// Set the tracer
-	this.tracer =  new Tracer(formatters);
-
-	this.hijackCompile();
-	this.setGlobalFunction();
-
-	this.log('njsTrace done loading...');
  }
 util.inherits(NJSTrace, EventEmitter);
 
@@ -86,6 +56,41 @@ Object.defineProperties(NJSTrace.prototype, {
 		}
 	}
 });
+
+/**
+ * Start the njsTrace instrumentation process
+ * @param {NJSTrace.NJSConfig} [config] - A configuration object
+ */
+NJSTrace.prototype.inject = function(config) {
+	// Merge the config with the default config
+	this.config = {};
+	extend(true, this.config, DEFAULT_CONFIG, config);
+	this.config.files = config.files || this.config.files; // In arrays we want to replace, not extend
+
+	// Set the logger
+	this.logger = new Output(this.config.logger);
+
+	this.log('New instance of NJSTrace created with config:', this.config);
+
+	// Warn about the use of wrapFunctions
+	if (this.config.wrapFunctions) {
+		this.log('WARN: wrapFunctions is set, it might affect V8 optimizations, set it to false if performing benchmarks');
+	}
+
+	// Create a formatter
+	var formatters = this.getFormatters(this.config.formatter);
+	if (formatters.length < 1) {
+		throw new Error('Invalid formatter type in config, must be either an instance of Formatter, or config object, or array of each');
+	}
+
+	// Set the tracer
+	this.tracer =  new Tracer(formatters);
+
+	this.hijackCompile();
+	this.setGlobalFunction();
+
+	this.log('njsTrace done loading...');
+};
 
 /**
  * Simple logger function
@@ -230,19 +235,11 @@ NJSTrace.prototype.getFormatters = function(formatterConfig, result) {
 	return result;
 };
 
-var instance = null;
-
 /**
- * Creates or gets a reference to an NJSTrace instance
- * @param {NJSTrace.NJSConfig} config
+ * A reference to an NJSTrace instance
  * @returns {NJSTrace} An instance of NJSTrace
  */
-module.exports.inject = function(config) {
-	if (!instance) {
-		instance = new NJSTrace(config || {});
-	}
-	return instance;
-};
+module.exports = new NJSTrace();
 
 /**
  * This callback is called when there is a message to log
