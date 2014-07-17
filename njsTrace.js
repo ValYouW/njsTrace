@@ -81,7 +81,7 @@ Object.defineProperties(NJSTrace.prototype, {
 	'enabled': {
 		get: function() {return this.config.enabled;},
 		set: function(value) {
-			this.config.prof = !!value;
+			this.config.enabled = !!value;
 			this.log('NJSTrace enabled property changed to: ', this.config.enabled);
 		}
 	}
