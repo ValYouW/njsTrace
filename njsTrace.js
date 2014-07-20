@@ -90,6 +90,7 @@ NJSTrace.prototype.inject = function(config) {
 	this.setGlobalFunction();
 
 	this.log('njsTrace done loading...');
+	return this;
 };
 
 /**
@@ -221,17 +222,16 @@ NJSTrace.prototype.getFormatters = function(formatterConfig, result) {
 	} else if (formatterConfig instanceof Formatter) {
 		result.push(formatterConfig);
 
-	// If this is an object then treat it as if it was the config for the default formatter
-	} else if (typeof formatterConfig === 'object') {
-		result.push(new Formatter(formatterConfig));
-
 	// If this is an array, loop thru the array and add it to our result
 	} else if (util.isArray(formatterConfig)) {
 		formatterConfig.forEach(function (fmt) {
 			self.getFormatters(fmt, result);
 		});
-	}
 
+	// If this is an object then treat it as if it was the config for the default formatter
+	} else if (typeof formatterConfig === 'object') {
+		result.push(new Formatter(formatterConfig));
+	}
 	return result;
 };
 
