@@ -1,5 +1,5 @@
 {
-  "name": "njsTrace",
+  "name": "njstrace",
   "version": "0.0.1",
   "description": "A Node.js tracing and instrumentation utility",
   "main": "njsTrace.js",
@@ -18,8 +18,8 @@
     "profiling",
     "performance"
   ],
-  "author": "YuvalW",
-  "license": "ISC",
+  "author": "ValYouW <ValYouW@gmail.com> (http://www.ValYouW.com)",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/yuvalw/njsTrace/issues"
   },

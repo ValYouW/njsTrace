@@ -2,15 +2,15 @@
 
 **(alpha)**
 
-njsTrace lets you easily instrument and trace you code, see all function calls, arguments, return values, as well as the time spent in each function.
+njstrace lets you easily instrument and trace you code, see all function calls, arguments, return values, as well as the time spent in each function.
 
 ## Installation
-`npm install njsTrace`
+`npm install njstrace`
 
 ## Example
-To start tracing with the default settings just require njsTrace and call its inject method.
+To start tracing with the default settings just require njstrace and call its inject method.
 ```javascript
-var njsTrace = require('njsTrace').inject();
+var njstrace = require('njstrace').inject();
 
 ```
 Lets take a look at the following 2 files dummy "app":
@@ -19,7 +19,7 @@ Lets take a look at the following 2 files dummy "app":
 **main.js**
 ```javascript
 // *** main.js ***
-var njsTrace = require('njsTrace').inject(),
+var njstrace = require('njstrace').inject(),
     mymod = require('./mymod.js');
 
 // Use only 4 digits so the output would be easier to read
@@ -47,7 +47,7 @@ function printResult(res) {
 }
 ```
 
-The njsTrace output of this silly app would be like that
+The njstrace output of this silly app would be like that
 ```
 --> [Anonymous]@c:\temp\tracedemo\mymod.js::1, args:
 <-- [Anonymous]@c:\temp\tracedemo\mymod.js::1, ts: 0, retLine: 22, retVal:
@@ -62,18 +62,18 @@ The njsTrace output of this silly app would be like that
 ```
 
 ## How it works?
-Once `njsTrace.inject()` is called njsTrace "hijacks" node.js `Module._compile()` method, this method is called whenever a module is being "required", njsTrace instrument the required module code, and then calls to the original `Module._compile()` with the instrumented code. The instrumentation just adds calls to njsTrace tracing methods at the beginning of each function, at the end of each function, and before any `return` statement.
+Once `njstrace.inject()` is called njstrace "hijacks" node.js `Module._compile()` method, this method is called whenever a module is being "required", njstrace instrument the required module code, and then calls to the original `Module._compile()` with the instrumented code. The instrumentation just adds calls to njstrace tracing methods at the beginning of each function, at the end of each function, and before any `return` statement.
 
-All these calls to njsTrace tracing methods should be totally neutral and should not affect your code logic, it will however (obviously), affect the runtime performance of your code, hence it is recommended to run with tracing ONLY when debugging (there is a possibility to run with njsTrace disabled and enable it when necessary, see configuration explanation below).
+All these calls to njstrace tracing methods should be totally neutral and should not affect your code logic, it will however (obviously), affect the runtime performance of your code, hence it is recommended to run with tracing ONLY when debugging (there is a possibility to run with njstrace disabled and enable it when necessary, see configuration explanation below).
 
-**NOTE:** Since the instrumentation happens when the `Module._compile()` is called, only modules that are "required" after the call to `njsTrace.inject()` would get instrumented. Practically it means that the actual module that calls to `njsTrace.inject()` will not be instrumented, so in the example above, there is no instrumentation on `main.js`
+**NOTE:** Since the instrumentation happens when the `Module._compile()` is called, only modules that are "required" after the call to `njstrace.inject()` would get instrumented. Practically it means that the actual module that calls to `njstrace.inject()` will not be instrumented, so in the example above, there is no instrumentation on `main.js`
 
 ## NJSTrace object
-The NJSTrace object is the result of `require('njsTrace')` it exposes the following:
+The NJSTrace object is the result of `require('njstrace')` it exposes the following:
 
 ### inject(config)
 The inject method can get a configuration object with the following:
-* `enabled {boolean}` - Whether tracing is active, `default: true` **Note:** njsTrace will instrument the code regardless of this setting, and njsTrace tracing methods would be called, they will just do nothing, so the affect on runtime peeformace should be minimal. You can enable njsTrace during runtime by setting `njsTrace.enabled = true`
+* `enabled {boolean}` - Whether tracing is active, `default: true` **Note:** njstrace will instrument the code regardless of this setting, and njstrace tracing methods would be called, they will just do nothing, so the affect on runtime peeformace should be minimal. You can enable njstrace during runtime by setting `njstrace.enabled = true`
 
 * `files {string|string[]}` - A glob file pattern(s) that matches the files to instrument,
 this can be any pattern that is supported by `minimatch` npm module.
@@ -82,15 +82,15 @@ negative pattern (i.e starts with "!") which negates (if matches) all matches up
 All file paths are processed **relative** to the process working directory.
 `default: All .js files EXCLUDING node_modules ['**/*.js', '!**/node_modules/**']`
 
-* `wrapFunctions {boolean}` - Whether njsTrace should wrap the instrumented functions in a try/catch block. Wrapping the functions in try/catch can give better tracing in case of uncaought exceptions. `default: true` **NOTE:** wrapping functions in try/catch prevent v8 optimizations on the function, don't use it when profiling.
+* `wrapFunctions {boolean}` - Whether njstrace should wrap the instrumented functions in a try/catch block. Wrapping the functions in try/catch can give better tracing in case of uncaought exceptions. `default: true` **NOTE:** wrapping functions in try/catch prevent v8 optimizations on the function, don't use it when profiling.
 
-* `logger {boolean|string|function}` - Controls where the logger output should go. `default: false` njsTrace uses the logger to log about the instrumentation process and other information messages, the logger is NOT used for writing the tracing info (for this see `formatter` below).
+* `logger {boolean|string|function}` - Controls where the logger output should go. `default: false` njstrace uses the logger to log about the instrumentation process and other information messages, the logger is NOT used for writing the tracing info (for this see `formatter` below).
     * If Boolean, indicates whether NJSTrace will log (to the console) its progress.
     * If string, a path to an output file (absolute or relative to current working directory).
     * If function, a custom log function, gets a single {string} argument.
 
 
-* `inspectArgs {boolean}` - Whether njsTrace should inspect the traced functions arguments and return values. `default: true` **NOTE:** Inspecting the arguments is done by passing the function's `arguments` object to a tracer method, passing the arguments object to another method prevent v8 optimizations on the function, don't use it when profiling.
+* `inspectArgs {boolean}` - Whether njstrace should inspect the traced functions arguments and return values. `default: true` **NOTE:** Inspecting the arguments is done by passing the function's `arguments` object to a tracer method, passing the arguments object to another method prevent v8 optimizations on the function, don't use it when profiling.
 
 * `formatter {Formatter|object | (Formatter|object)[]}` - An instance of Formatter(s) to use for output or a config object(s) for the default formatter (read more on Formatters below)
     * if Formatter object, it will be added to the list of formatters to use
@@ -98,19 +98,19 @@ All file paths are processed **relative** to the process working directory.
     * if Array, a list of formatters to use, or a list of configurations for the default formatter (can be mixed, so if two configuration objects are provided, two default formatters would be created with the given config).
 
 ### enabled {boolean}
-Gets or sets whether njsTrace is enabled or not. This let you start your application with instrumented code, but delay start the actual tracing (say start the tracing only after a specific event etc).
+Gets or sets whether njstrace is enabled or not. This let you start your application with instrumented code, but delay start the actual tracing (say start the tracing only after a specific event etc).
 ```javascript
-// Start njsTrace disabled (instrument the code but tracing is not active)
-var njsTrace = require('njsTrace').inject({enabled: false});
+// Start njstrace disabled (instrument the code but tracing is not active)
+var njstrace = require('njstrace').inject({enabled: false});
 // And somewhere later in the code activate the tracing
-njsTrace.enabled = true;
+njstrace.enabled = true;
 ```
 
 ## Formatters
-njsTrace uses formatters to write the tracing output, it can use multiple formatters so in a single run several files in different formats would be written. The formatters that njsTrace will use are configured using the `formatter` property on the configuration object passed to the `inject()` method.
+njstrace uses formatters to write the tracing output, it can use multiple formatters so in a single run several files in different formats would be written. The formatters that njstrace will use are configured using the `formatter` property on the configuration object passed to the `inject()` method.
 
 ### Default Formatter
-While you can write your own Formatter object, njsTrace comes with a default formatter which can be configured using an object with the following properties:
+While you can write your own Formatter object, njstrace comes with a default formatter which can be configured using an object with the following properties:
 * `stdout {boolean|string|function}` - Controls where the output should go. `default: true`
     * If Boolean, indicates whether the formatter will write output (**to the console**) or not.
     * If String, a path to an output file (absolute or relative to current working dir).
@@ -143,14 +143,14 @@ var fileFormatter = {
 };
 
 // Call inject and pass the 2 formatters config objects
-var njsTrace = require('njsTrace').inject({
+var njstrace = require('njstrace').inject({
     formatter: [consoleFormatter, fileFormatter]
 });
 ```
 The result of the above run would be both an output to the console and output to a "trace.out" file.
 
 ### Custom Formatter
-Writing a custom formatter is easy, all you have to do is write a "class" that inherits from njsTrace Formatter, and implement the `onEntry` and `onExit` methods.
+Writing a custom formatter is easy, all you have to do is write a "class" that inherits from njstrace Formatter, and implement the `onEntry` and `onExit` methods.
 
 **onEntry** - This method is called whenever a traced function is being called, the method gets a single `args` object with the following:
 * `name {string}` - The traced function name
@@ -189,8 +189,8 @@ Creating a simple formatter that writes to the console.
 ```javascript
 // *** main.js ***
 
-// Get a reference to njsTrace default Formatter class
-var Formatter = require('njsTrace/lib/formatter.js');
+// Get a reference to njstrace default Formatter class
+var Formatter = require('njstrace/lib/formatter.js');
 
 // Create my custom Formatter class
 function MyFormatter() {
@@ -212,7 +212,7 @@ MyFormatter.prototype.onExit = function(args) {
 };
 
 // Call inject and use MyFormatter as the formatter
-var njsTrace = require('njsTrace').inject({ formatter: new MyFormatter() }),
+var njstrace = require('njstrace').inject({ formatter: new MyFormatter() }),
     b = require('./b.js');
 
 // Do some stuff on "b"
