@@ -25,7 +25,7 @@ var njsTrace = require('njsTrace').inject(),
 // Use only 4 digits so the output would be easier to read
 mymod.run(parseFloat(Math.random().toFixed(4)));
 ```
-** mymod.js **
+**mymod.js**
 ```javascript
 // *** mymod.js ***
 exports.run = function(number) {
@@ -110,11 +110,11 @@ njsTrace.enabled = true;
 njsTrace uses formatters to write the tracing output, it can use multiple formatters so in a single run several files in different formats would be written. The formatters that njsTrace will use are configured using the `formatter` property on the configuration object passed to the `inject()` method.
 
 ### Default Formatter
-While you can write your own Formatter object, njsTrace comes with a default formatter which can be configured using the following object:
+While you can write your own Formatter object, njsTrace comes with a default formatter which can be configured using an object with the following properties:
 * `stdout {boolean|string|function}` - Controls where the output should go. `default: true`
     * If Boolean, indicates whether the formatter will write output (**to the console**) or not.
     * If String, a path to an output file (absolute or relative to current working dir).
-    * If function, then this function will be used for output (gets a single string arg).
+    * If function, this function will be used for output (gets a single string arg).
 
 * `indentationChar {string}` - The character used for output indentation of the call stack (e.g '\t', '   ', etc). `default: 2 space chars`
 
@@ -187,7 +187,7 @@ Creating a simple formatter that writes to the console.
 
 **main.js**
 ```javascript
-// main.js
+// *** main.js ***
 
 // Get a reference to njsTrace default Formatter class
 var Formatter = require('njsTrace/lib/formatter.js');
@@ -222,7 +222,7 @@ setInterval(function(){
 ```
 **b.js**
 ```javascript```
-// b.js
+// *** b.js ***
 function doFoo() {
     console.log('fooing');
     return 3;
@@ -247,7 +247,7 @@ Exit from exports.foo@c:\temp\tracedemo\b.js::7, had exception: false, exit line
 ...
 ...
 ```
-##What next?
+##What's next?
 I started this project as an experiment, next I would want to see if I can create some GUI that will parse the tracing
 output and display it nicely (forks are welcomed as I don't see myself getting to this :)).
 
