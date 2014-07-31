@@ -65,7 +65,7 @@ NJSTrace.prototype.inject = function(config) {
 	// Merge the config with the default config
 	this.config = {};
 	extend(true, this.config, DEFAULT_CONFIG, config);
-	this.config.files = config.files || this.config.files; // In arrays we want to replace, not extend
+	this.config.files = (config && config.files) || this.config.files; // In arrays we want to replace, not extend
 
 	// Set the logger
 	this.logger = new Output(this.config.logger);
