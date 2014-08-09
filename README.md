@@ -79,8 +79,22 @@ The inject method can get a configuration object with the following:
 this can be any pattern that is supported by `minimatch` npm module.
 The matching is case-insensitive. Patterns are processed in-order with an 'or' operator, unless it's a
 negative pattern (i.e starts with "!") which negates (if matches) all matches up to it.
-All file paths are processed **relative** to the process working directory.
 `default: All .js files EXCLUDING node_modules ['**/*.js', '!**/node_modules/**']`
+NOTE: All file paths are processed **relative** to the process working directory, which means that the glob patterns
+also have to be relative to the working directory. If you are not running your app from the "root" of your app
+(i.e running from a sub-direcotry "node ../server.js"), you will not be able to use the default glob patterns, a solution
+could be to use something like that:
+```javascript
+var path = require('path');
+
+// Get the relative path from the working directory to the directory of the main app file
+var rel = path.relative(process.cwd(), __dirname);
+
+// Build the glob pattern for all JS files one that excludes node_modules, and use those
+var alljs = path.join(rel, '**', '*.js');
+var noNodeMods = '!' + path.join(rel, '**', 'node_modules', '**');
+var njstrace = require('njstrace').inject({files: [alljs, noNodeMods]}),
+```
 
 * `wrapFunctions {boolean}` - Whether njstrace should wrap the instrumented functions in a try/catch block. Wrapping the functions in try/catch can give better tracing in case of uncaought exceptions. `default: true` **NOTE:** wrapping functions in try/catch prevent v8 optimizations on the function, don't use it when profiling.
 
