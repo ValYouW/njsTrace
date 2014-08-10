@@ -11,7 +11,7 @@ var util = require('util'),
 
 var DEFAULT_CONFIG = {
 	enabled: true,
-	files: ['**/*.js', '!**/node_modules/**'],
+	files: ['**/*.js', '.**/*.js', '!**/node_modules/**'],
 	wrapFunctions: true,
 	logger: false,
 	inspectArgs: true,
