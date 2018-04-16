@@ -7,11 +7,11 @@ njsTrace.inject({
 	enabled: true,
 	wrapFunctions: true,
 	files: ['**/*.js', '!**/node_modules/**'],
-	formatter: {inspectArgsCount: 3, inspectArgsMaxLen: 50, inspectOptions: {colors: true}}
+	formatter: {inspectArgsCount: 3, inspectArgsMaxLen: 50, inspectOptions: {colors: false}}
 });
 
-var file1 = require('./mocks/file1.js');
-file1.foo();
+//var file1 = require('./mocks/file1.js');
+//file1.foo();
 //var file2 = require('./mocks/file2.js');
 //file2.foo();
-//require('./mocks/basic.js');
+require('./mocks/basic.js');
