@@ -18,7 +18,7 @@ var DEFAULT_CONFIG = {
 	formatter: undefined
 };
 
- /**
+/**
  * Creates a new instance of NJSTrace
  * @class The main class that is responsible for the entire njsTrace functionality
  * @extends EventEmitter
@@ -26,7 +26,7 @@ var DEFAULT_CONFIG = {
  */
 function NJSTrace() {
 	EventEmitter.call(this);
- }
+}
 util.inherits(NJSTrace, EventEmitter);
 
 /**
@@ -48,7 +48,7 @@ Object.defineProperties(NJSTrace.prototype, {
 	 * See "enabled" property on {@link NJSTrace.NJSConfig}
 	 * @memberOf! NJSTrace.prototype
 	 */
-	'enabled': {
+	enabled: {
 		get: function() {return this.config.enabled;},
 		set: function(value) {
 			this.config.enabled = !!value;
@@ -149,7 +149,7 @@ NJSTrace.prototype.hijackCompile = function() {
 				}
 
 				self.log('Done:', filename);
-			} catch (ex) {
+			} catch(ex) {
 				self.log('ERROR: Error instrumenting file:', filename, ', Exception:', ex);
 			}
 		}
@@ -174,7 +174,7 @@ NJSTrace.prototype.setGlobalFunction = function() {
 
 		try {
 			return self.tracer.onEntry(args);
-		} catch (ex) {
+		} catch(ex) {
 			self.log('ERROR: Exception occurred on tracer entry:', ex);
 		}
 	};
@@ -187,7 +187,7 @@ NJSTrace.prototype.setGlobalFunction = function() {
 
 		try {
 			self.tracer.onExit(args);
-		} catch (ex) {
+		} catch(ex) {
 			self.log('ERROR: Exception occurred on tracer exit:', ex);
 		}
 	};
@@ -200,7 +200,7 @@ NJSTrace.prototype.setGlobalFunction = function() {
 
 		try {
 			self.tracer.onCatchClause(args);
-		} catch (ex) {
+		} catch(ex) {
 			self.log('ERROR: Exception occurred on tracer onCatchClause:', ex);
 		}
 	};
@@ -224,7 +224,7 @@ NJSTrace.prototype.getFormatters = function(formatterConfig, result) {
 
 	// If this is an array, loop thru the array and add it to our result
 	} else if (util.isArray(formatterConfig)) {
-		formatterConfig.forEach(function (fmt) {
+		formatterConfig.forEach(function _(fmt) {
 			self.getFormatters(fmt, result);
 		});
 

@@ -1,5 +1,3 @@
-var colors = require('colors');
-
 function a() {
 	b();
 }

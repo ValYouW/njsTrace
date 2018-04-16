@@ -1,0 +1,50 @@
+{
+	"parserOptions": {
+		"ecmaVersion": 2017
+	},
+	"env": {
+		"node": true,
+		"es6": true
+	},
+	"plugins": [
+		"named-unassigned-functions"
+	],
+	"globals": {},
+	"rules": {
+		"semi": 2,
+		"no-bitwise": 2,
+		"curly": 2,
+		"eqeqeq": 2,
+		"guard-for-in": 0,
+		"no-extend-native": 2,
+		"no-caller": 2,
+		"no-new": 2,
+		"no-undef": 2,
+		"no-unused-vars": 2,
+		"no-empty": 2,
+		"new-cap": 2,
+		"quotes": [2, "single"],
+		"no-with": 2,
+		"brace-style": [2, "1tbs", { "allowSingleLine": true }],
+		"no-mixed-spaces-and-tabs": 2,
+		//"one-var": [2, { "uninitialized": "always", "initialized": "never" }],
+		"quote-props": [2, "as-needed"],
+		"key-spacing": [2, {"beforeColon": false, "afterColon": true }],
+		"space-unary-ops": [2, {"words": true, "nonwords": false}],
+		"space-before-function-paren": [2, {"anonymous": "never", "named": "never", "asyncArrow": "always"}],
+		"space-in-parens": [2, "never"],
+		"no-trailing-spaces": 2,
+		//"func-names": [2, "as-needed"],
+		"named-unassigned-functions/named-unassigned-functions": [2, "always"],
+		"camelcase": [2, { "properties": "never" }],
+		"keyword-spacing": [2, {"overrides": {"catch": {"after": false}}}],
+		"spaced-comment": [2, "always"],
+		"space-infix-ops": 2,
+		"space-before-blocks": [2, "always"],
+		"indent": [2, "tab", { "SwitchCase": 1 }],
+		"linebreak-style": [2, "unix"],
+
+		// Node
+		"no-new-require": 2
+	}
+}
