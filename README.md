@@ -1,7 +1,5 @@
 # njsTrace - Instrumentation and Tracing
 
-**(alpha)**
-
 njstrace lets you easily instrument and trace you code, see all function calls, arguments, return values, as well as the time spent in each function.
 
 ## Installation
@@ -49,8 +47,6 @@ function printResult(res) {
 
 The njstrace output of this silly app would be like that
 ```
---> [Anonymous]@c:\temp\tracedemo\mymod.js::1, args:
-<-- [Anonymous]@c:\temp\tracedemo\mymod.js::1, ts: 0, retLine: 22, retVal:
 --> MyMod.run@c:\temp\tracedemo\mymod.js::17, args: {0}: 0.9967
   --> first@c:\temp\tracedemo\mymod.js::4, args: {0}: 0.9967
     --> second@c:\temp\tracedemo\mymod.js::9, args: {0}: 99.67 {1}: 'sqrt'
