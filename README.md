@@ -135,7 +135,7 @@ While you can write your own Formatter object, njstrace comes with a default for
 * `inspectOptions {object}` - The inspection is done using Node.js `util.inspect` method, this is an options object for that function. `default: null`
 
 **Example**
-```javascript```
+```javascript
 // Create formatter options that will write to the console, limit each argument inspect output to 100 chars,
 // color the arguments and use 4 spaces indentation
 var consoleFormatter = {
@@ -197,8 +197,6 @@ Creating a simple formatter that writes to the console.
 
 **main.js**
 ```javascript
-// *** main.js ***
-
 // Get a reference to njstrace default Formatter class
 var Formatter = require('njstrace/lib/formatter.js');
 
@@ -226,13 +224,13 @@ var njstrace = require('njstrace').inject({ formatter: new MyFormatter() }),
     b = require('./b.js');
 
 // Do some stuff on "b"
-setInterval(function(){
+setTimeout(function(){
     b.foo();
 }, 1000);
 ```
+
 **b.js**
-```javascript```
-// *** b.js ***
+```javascript
 function doFoo() {
     console.log('fooing');
     return 3;
@@ -242,22 +240,16 @@ exports.foo = function() {
     doFoo();
 }
 ```
-And the console output is:
+And the console output would be:
 ```
-Got call to exports.foo@c:\temp\tracedemo\b.js::7, num of args: 0, stack location: 2
-Got call to doFoo@c:\temp\tracedemo\b.js::2, num of args: 0, stack location: 3
+Got call to exports.foo@C:\MyProjects\njsTrace\test\b.js::6, num of args: 0, stack location: 1
+Got call to doFoo@C:\MyProjects\njsTrace\test\b.js::1, num of args: 0, stack location: 2
 fooing
-Exit from doFoo@c:\temp\tracedemo\b.js::2, had exception: false, exit line: 4, execution time: 1, has return value: true
-Exit from exports.foo@c:\temp\tracedemo\b.js::7, had exception: false, exit line: 9, execution time: 2, has return value: false
-Got call to exports.foo@c:\temp\tracedemo\b.js::7, num of args: 0, stack location: 2
-Got call to doFoo@c:\temp\tracedemo\b.js::2, num of args: 0, stack location: 3
-fooing
-Exit from doFoo@c:\temp\tracedemo\b.js::2, had exception: false, exit line: 4, execution time: 0, has return value: true
-Exit from exports.foo@c:\temp\tracedemo\b.js::7, had exception: false, exit line: 9, execution time: 2, has return value: false
-...
-...
+Exit from doFoo@C:\MyProjects\njsTrace\test\b.js::1, had exception: false, exit line: 3, execution time: 0, has return value: true
+Exit from exports.foo@C:\MyProjects\njsTrace\test\b.js::6, had exception: false, exit line: 8, execution time: 1, has return value: false
 ```
-##What's next?
+
+## What's next?
 I started this project as an experiment, next I would want to see if I can create some GUI that will parse the tracing
 output and display it nicely (forks are welcomed as I don't see myself getting to this :)).
 
