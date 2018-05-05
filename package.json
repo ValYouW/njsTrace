@@ -1,6 +1,6 @@
 {
   "name": "njstrace",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Node.js tracing and instrumentation utility",
   "main": "njsTrace.js",
   "scripts": {
