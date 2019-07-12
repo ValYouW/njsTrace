@@ -39,5 +39,3 @@ try {
 } catch(ex) {
 	var y = 3;
 }
-
-return 3;

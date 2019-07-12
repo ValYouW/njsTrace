@@ -28,11 +28,11 @@
   "dependencies": {
     "extend": "^3.0.1",
     "falafel": "^2.1.0",
-    "idgen": "^2.0",
+    "idgen": "^2.1.0",
     "minimatch": "^3.0.4"
   },
   "devDependencies": {
-    "eslint": "^4.19.0",
+    "eslint": "^6.0.1",
     "eslint-plugin-named-unassigned-functions": "0.0.2"
   }
 }
