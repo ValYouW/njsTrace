@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/yuvalw/njsTrace",
   "dependencies": {
-    "extend": "^3.0.1",
+    "extend": "^3.0.2",
     "falafel": "^2.1.0",
     "idgen": "^2.1.0",
     "minimatch": "^3.0.4"
