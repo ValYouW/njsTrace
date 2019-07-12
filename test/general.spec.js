@@ -16,4 +16,4 @@ njsTrace.inject({
 // file2.foo();
 //require('./mocks/async.js');
 // require('./mocks/generators.js');
-require('./mocks/basic.js');
+require('./mocks/testCatchInject.js');

@@ -44,4 +44,4 @@ var foo = function(x) {
 	console.log('in nonAnonIIFE');
 })();
 
-foo();
+foo(2);
