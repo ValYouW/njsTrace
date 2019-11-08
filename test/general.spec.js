@@ -17,3 +17,4 @@ njsTrace.inject({
 //require('./mocks/async.js');
 //require('./mocks/generators.js');
 //require('./mocks/file2.js');
+require('./mocks/return-with-comma.js');
