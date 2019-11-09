@@ -10,11 +10,11 @@ njsTrace.inject({
 	formatter: {inspectArgsCount: 3, inspectArgsMaxLen: 50, inspectOptions: {colors: false}}
 });
 
-// var file1 = require('./mocks/file1.js');
-// file1.foo();
-// var file2 = require('./mocks/file2.js');
-// file2.foo();
+//var file1 = require('./mocks/file1.js');
+//file1.foo();
+//var file2 = require('./mocks/file2.js');
+//file2.foo();
 //require('./mocks/async.js');
 //require('./mocks/generators.js');
-//require('./mocks/file2.js');
-require('./mocks/return-with-comma.js');
+//require('./mocks/return-with-comma.js');
+//require('./mocks/no-args-catch.js');
