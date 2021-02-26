@@ -19,7 +19,7 @@
     "profiling",
     "performance"
   ],
-  "author": "ValYouW <ValYouW@gmail.com> (http://www.ValYouW.com)",
+  "author": "ValYouW <ValYouW@gmail.com> (http://www.TheCodingNotebook.com)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/yuvalw/njsTrace/issues"
@@ -27,12 +27,12 @@
   "homepage": "https://github.com/yuvalw/njsTrace",
   "dependencies": {
     "extend": "^3.0.2",
-    "falafel": "^2.1.0",
+    "falafel": "^2.2.4",
     "idgen": "^2.1.0",
     "minimatch": "^3.0.4"
   },
   "devDependencies": {
-    "eslint": "^6.6.0",
-    "eslint-plugin-named-unassigned-functions": "0.0.2"
+    "eslint": "7.20.0",
+    "eslint-plugin-named-unassigned-functions": "0.0.3"
   }
 }
