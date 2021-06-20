@@ -32,7 +32,7 @@
     "minimatch": "^3.0.4"
   },
   "devDependencies": {
-    "eslint": "7.20.0",
-    "eslint-plugin-named-unassigned-functions": "0.0.3"
+    "eslint": "^7.29.0",
+    "eslint-plugin-named-unassigned-functions": "^0.0.3"
   }
 }
