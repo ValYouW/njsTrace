@@ -1,9 +1,12 @@
-(Older versions)
+v2.0.0
 ===
-No CHANGELOG was maintained...
+Use `espree` for parsing javascript code instead of `node-falafel`.
 
 v1.1.0
 ===
 1. Update esprima parser verion to 9
 1. Fixed "rest" parameter logging
 
+(Older versions)
+===
+No CHANGELOG was maintained...
