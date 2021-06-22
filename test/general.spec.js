@@ -1,5 +1,4 @@
 // --- TODO: Write some real tests ---
-
 var njsTrace = require('../njsTrace.js');
 njsTrace.inject({
 	inspectArgs: true,
@@ -10,6 +9,8 @@ njsTrace.inject({
 	formatter: {inspectArgsCount: 3, inspectArgsMaxLen: 50, inspectOptions: {colors: false}}
 });
 
+require('./mocks/arrow.js');
+//require('./mocks/basic.js');
 //var file1 = require('./mocks/file1.js');
 //file1.foo();
 //var file2 = require('./mocks/file2.js');
