@@ -1,3 +1,7 @@
+v2.0.1
+===
+support arrow functions where body is not a BlockStatement. Fixes #12
+
 v2.0.0
 ===
 Use `espree` for parsing javascript code instead of `node-falafel`.
