@@ -204,6 +204,19 @@ NJSTrace.prototype.setGlobalFunction = function() {
 			self.log('ERROR: Exception occurred on tracer onCatchClause:', ex);
 		}
 	};
+
+	this.log('Setting global.__njsOnIfStatement__ function');
+	global.__njsOnIfStatement__ = function(args) {
+		if (!self.config.enabled) {
+			return;
+		}
+
+		try {
+			self.tracer.onIfStatement(args);
+		} catch(ex) {
+			self.log('ERROR: Exception occurred on tracer onIfStatement:', ex);
+		}
+	};
 };
 
 /**
