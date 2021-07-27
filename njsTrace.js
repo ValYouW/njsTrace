@@ -210,29 +210,16 @@ NJSTrace.prototype.setGlobalFunction = function() {
 		}
 	};
 
-	this.log('Setting global.__njsOnIfStatement__ function');
-	global.__njsOnIfStatement__ = function(args) {
+	this.log('Setting global.__njsOnStatement__ function');
+	global.__njsOnStatement__ = function(args) {
 		if (!self.config.enabled) {
 			return;
 		}
 
 		try {
-			self.tracer.onIfStatement(args);
+			self.tracer.onStatement(args);
 		} catch(ex) {
 			self.log('ERROR: Exception occurred on tracer onIfStatement:', ex);
-		}
-	};
-
-	this.log('Setting global.__njsOnForStatement__ function');
-	global.__njsOnForStatement__ = function(args) {
-		if (!self.config.enabled) {
-			return;
-		}
-
-		try {
-			self.tracer.onForStatement(args);
-		} catch(ex) {
-			self.log('ERROR: Exception occurred on tracer onForStatement:', ex);
 		}
 	};
 
