@@ -8,6 +8,7 @@ var util = require('util'),
 	Output = require('./lib/output.js'),
 	Tracer = require('./lib/tracer.js'),
 	Formatter = require('./lib/formatter.js');
+	// sprintf = require('sprintf-js')
 
 var DEFAULT_CONFIG = {
 	enabled: true,
@@ -16,6 +17,10 @@ var DEFAULT_CONFIG = {
 	logger: false,
 	inspectArgs: true,
 	formatter: undefined
+};
+
+var FUNCTION_MCCABE = {
+
 };
 
 /**
@@ -217,6 +222,20 @@ NJSTrace.prototype.setGlobalFunction = function() {
 			self.log('ERROR: Exception occurred on tracer onIfStatement:', ex);
 		}
 	};
+
+	this.log('Setting global.__njsOnForStatement__ function');
+	global.__njsOnForStatement__ = function(args) {
+		if (!self.config.enabled) {
+			return;
+		}
+
+		try {
+			self.tracer.onForStatement(args);
+		} catch(ex) {
+			self.log('ERROR: Exception occurred on tracer onForStatement:', ex);
+		}
+	};
+
 };
 
 /**
