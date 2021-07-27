@@ -19,9 +19,6 @@ var DEFAULT_CONFIG = {
 	formatter: undefined
 };
 
-var FUNCTION_MCCABE = {
-
-};
 
 /**
  * Creates a new instance of NJSTrace
