@@ -71,6 +71,8 @@ The NJSTrace object is the result of `require('njstrace')` it exposes the follow
 The inject method can get a configuration object with the following:
 * `enabled {boolean}` - Whether tracing is active, `default: true` **Note:** njstrace will instrument the code regardless of this setting, and njstrace tracing methods would be called, they will just do nothing, so the affect on runtime peeformace should be minimal. You can enable njstrace during runtime by setting `njstrace.enabled = true`
 
+* `ecmaVersion {number|string}` - The Ecma Version to use when parsing javascript code, `default: 2022`. Supported values are the same that are supported by the Espree parser. Use "latest" to use the latest supported version.
+
 * `files {string|string[]}` - A glob file pattern(s) that matches the files to instrument,
 this can be any pattern that is supported by `minimatch` npm module.
 The matching is case-insensitive. Patterns are processed in-order with an 'or' operator, unless it's a
