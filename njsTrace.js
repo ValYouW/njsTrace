@@ -15,7 +15,8 @@ var DEFAULT_CONFIG = {
 	wrapFunctions: true,
 	logger: false,
 	inspectArgs: true,
-	formatter: undefined
+	formatter: undefined,
+	ecmaVersion: 2022
 };
 
 /**
@@ -252,6 +253,9 @@ module.exports = new NJSTrace();
  * @typedef {object} NJSTrace.NJSConfig
  *
  * @property {boolean} [enabled=true] - Whether tracing is active. Note: njsTrace will instrument the code regardless of this setting.
+ *
+ * @property {number|string} [ecmaVersion=2022] - The Ecma Version to use when parsing javascript code. Default: 2022
+ * Supported values are the same that are supported by the Espree parser. Use "latest" to use the latest supported version.
  *
  * @property {string|string[]} [files=<see description>] - A glob file pattern(s) that matches the files to instrument,
  * this supports any pattern supported by "minimatch" npm module.

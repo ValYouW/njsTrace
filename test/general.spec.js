@@ -6,7 +6,7 @@ njsTrace.inject({
 	enabled: true,
 	wrapFunctions: true,
 	files: ['**/*.js', '!**/node_modules/**'],
-	formatter: {inspectArgsCount: 3, inspectArgsMaxLen: 50, inspectOptions: {colors: false}}
+	formatter: { inspectArgsCount: 3, inspectArgsMaxLen: 50, inspectOptions: { colors: false } }
 });
 
 require('./mocks/arrow.js');
